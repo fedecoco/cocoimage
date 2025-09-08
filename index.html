@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CocoImage - Tu Convertidor de Imágenes</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="coco-logo.png" alt="CocoImage Logo" class="logo">
+            <h1>Bienvenido a CocoImage</h1>
+            <p>La forma más fresca de convertir tus imágenes.</p>
+        </header>
+        <main>
+            <div class="upload-area" id="upload-area">
+                <p>Arrastra y suelta tus imágenes aquí</p>
+                <p>o</p>
+                <label for="file-input" class="file-label">Selecciona tus archivos</label>
+                <input type="file" id="file-input" multiple accept="image/*">
+            </div>
+            <div class="conversion-controls">
+                <label for="format-select">Convertir a:</label>
+                <select id="format-select">
+                    <option value="jpeg">JPEG</option>
+                    <option value="png">PNG</option>
+                    <option value="heif">HEIF</option> 
+                    <option value="bmp">BMP</option>
+                    <option value="tiff">TIFF</option>
+                </select>
+                <button id="convert-btn" disabled>Convertir</button>
+            </div>
+            <div id="image-previews" class="image-previews"></div>
+            <div class="download-section">
+                <button id="download-all-btn" style="display: none;">Descargar Todo</button>
+            </div>
+        </main>
+        <footer>
+            <p>Creado con ❤️ por CocoImage</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/image-js/dist/image.min.js"></script>
+
+<script src="https://unpkg.com/libheif-js@1.15.2/libheif/libheif-wasm.js"></script>
+
+<script src="scripts.js"></script>
+</body>
+</html>

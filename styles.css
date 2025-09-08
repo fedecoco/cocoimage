@@ -1,0 +1,200 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+/* --- Animación del Coco --- */
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-20px);
+    }
+    60% {
+        transform: translateY(-10px);
+    }
+}
+
+/* --- Estilos Generales --- */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #FFFFFF; /* Fondo blanco puro */
+    color: #3E2723; /* Texto marrón oscuro */
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    background-color: #fff;
+    padding: 30px 40px;
+    border-radius: 20px; /* Bordes más redondeados */
+    box-shadow: 0 10px 25px rgba(141, 110, 99, 0.2); /* Sombra suave color coco */
+    border: 1px solid #EFEBE9;
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+}
+
+/* --- Encabezado con Logo Animado --- */
+header {
+    margin-bottom: 30px;
+}
+
+.logo {
+    width: 100px;
+    height: auto;
+    margin-bottom: 15px;
+    /* Aplicamos la animación */
+    animation: bounce 2.5s infinite;
+}
+
+header h1 {
+    color: #3E2723;
+    font-weight: 600;
+    margin: 0;
+}
+
+header p {
+    color: #8D6E63; /* Marrón coco claro */
+    margin-top: 5px;
+}
+
+/* --- Área de Carga de Archivos --- */
+.upload-area {
+    border: 3px dashed #8D6E63; /* Borde punteado color coco */
+    border-radius: 15px;
+    padding: 40px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.upload-area.hover, .upload-area:hover {
+    background-color: #F9FBE7; /* Un verde muy pálido al pasar el ratón */
+    border-color: #4CAF50; /* Borde verde al pasar el ratón */
+}
+
+.upload-area p {
+    margin: 10px 0;
+}
+
+.file-label {
+    background-color: #4CAF50; /* Verde hoja */
+    color: #fff;
+    padding: 12px 25px;
+    border-radius: 25px; /* Botones más redondeados (píldora) */
+    cursor: pointer;
+    display: inline-block;
+    transition: background-color 0.3s, transform 0.2s;
+    font-weight: 600;
+    border: none;
+}
+
+.file-label:hover {
+    background-color: #43A047; /* Verde más oscuro al pasar el ratón */
+    transform: scale(1.05);
+}
+
+#file-input {
+    display: none;
+}
+
+/* --- Controles de Conversión --- */
+.conversion-controls {
+    margin: 30px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+#format-select {
+    padding: 12px;
+    border: 2px solid #D7CCC8; /* Borde marrón claro */
+    border-radius: 10px;
+    background-color: #fff;
+    color: #3E2723;
+}
+
+#convert-btn, #download-all-btn {
+    background-color: #4CAF50; /* Verde hoja */
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+#convert-btn:disabled {
+    background-color: #A5D6A7; /* Verde pálido para estado deshabilitado */
+    cursor: not-allowed;
+    transform: none;
+}
+
+#convert-btn:hover:not(:disabled), #download-all-btn:hover {
+    background-color: #43A047;
+    transform: scale(1.05);
+}
+
+/* --- Vistas Previas de Imágenes --- */
+.image-previews {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.preview-item {
+    border: 1px solid #EFEBE9;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    background-color: #FAFAFA;
+}
+
+.preview-item img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.preview-item .file-name {
+    font-size: 14px;
+    word-break: break-all;
+    color: #8D6E63;
+}
+
+.preview-item a { /* Estilo para el enlace de descarga individual */
+    text-decoration: none;
+    margin-top: 5px;
+}
+
+.download-link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 15px;
+    background-color: #4CAF50; /* Verde hoja */
+    color: #fff;
+    text-decoration: none;
+    border-radius: 25px;
+    transition: background-color 0.3s, transform 0.2s;
+    font-weight: 600;
+}
+
+.download-link:hover {
+    background-color: #43A047;
+    transform: scale(1.05);
+}
+
+/* --- Pie de Página --- */
+footer {
+    margin-top: 40px;
+    color: #BCAAA4; /* Marrón muy claro */
+}
