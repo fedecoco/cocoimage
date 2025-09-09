@@ -1,46 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Valida que las librerías se hayan cargado correctamente.
-    if (typeof IJS === 'undefined') {
-        const errorMessage = 'Error: La librería IJS no se cargó correctamente. Revisa tu conexión a internet y la URL del script.';
-        console.error(errorMessage);
-        alert(errorMessage);
-        return;
-    }
-    if (typeof libheif === 'undefined') {
-        const errorMessage = 'Error: La librería libheif no se cargó correctamente. Revisa tu conexión a internet y la URL del script.';
-        console.error(errorMessage);
-        alert(errorMessage);
-        return;
-    }
-
+    // --- Referencias al DOM ---
     const uploadArea = document.getElementById('upload-area');
     const fileInput = document.getElementById('file-input');
     const convertBtn = document.getElementById('convert-btn');
     const formatSelect = document.getElementById('format-select');
     const imagePreviews = document.getElementById('image-previews');
-    const downloadAllBtn = document.getElementById('download-all-btn'); 
+    const downloadAllBtn = document.getElementById('download-all-btn');
 
     let filesToConvert = [];
     let convertedFiles = [];
 
     // --- Manejo de subida de archivos ---
-    uploadArea.addEventListener('dragover', (e) => { 
-        e.preventDefault(); 
-        uploadArea.classList.add('hover'); 
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('hover');
     });
-    uploadArea.addEventListener('dragleave', () => { 
-        uploadArea.classList.remove('hover'); 
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('hover');
     });
     uploadArea.addEventListener('drop', (e) => {
         e.preventDefault();
         uploadArea.classList.remove('hover');
         handleFiles(e.dataTransfer.files);
     });
-    uploadArea.addEventListener('click', (e) => { 
-        if (e.target.tagName.toLowerCase() !== 'label') fileInput.click(); 
+    uploadArea.addEventListener('click', (e) => {
+        if (e.target.tagName.toLowerCase() !== 'label') fileInput.click();
     });
-    fileInput.addEventListener('change', () => { 
-        handleFiles(fileInput.files); 
+    fileInput.addEventListener('change', () => {
+        handleFiles(fileInput.files);
     });
 
     function handleFiles(files) {
@@ -68,6 +55,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- Función genérica para convertir imágenes (excepto HEIF) ---
+    async function convertImage(file, format) {
+        const imageBitmap = await createImageBitmap(file);
+        const canvas = document.createElement('canvas');
+        canvas.width = imageBitmap.width;
+        canvas.height = imageBitmap.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(imageBitmap, 0, 0);
+
+        return new Promise((resolve) => {
+            canvas.toBlob((blob) => {
+                const newName = `${file.name.split('.').slice(0, -1).join('.')}.${format}`;
+                const convertedFile = new File([blob], newName, { type: `image/${format}` });
+                resolve(convertedFile);
+            }, `image/${format}`);
+        });
+    }
+
     // --- Lógica de conversión ---
     convertBtn.addEventListener('click', async () => {
         const format = formatSelect.value;
@@ -80,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i < filesToConvert.length; i++) {
             const file = filesToConvert[i];
             const previewItem = previewItems[i];
-            
+
             // Limpia resultados anteriores
             const existingLink = previewItem.querySelector('a');
             if (existingLink) existingLink.remove();
@@ -91,7 +96,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 let convertedFile;
                 const newName = `${file.name.split('.').slice(0, -1).join('.')}.${format}`;
 
-                // --- Selección de librería según el formato ---
                 if (format === 'heif') {
                     // Conversión a HEIF con libheif-js
                     const imageBitmap = await createImageBitmap(file);
@@ -106,15 +110,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     const heifArrayBuffer = await encoder.encode(imageData);
 
                     convertedFile = new File([heifArrayBuffer], newName, { type: 'image/heif' });
-
                 } else {
-                    // Conversión a formatos estándar con image-js
-                    const image = await IJS.Image.load(await file.arrayBuffer());
-                    const mimeType = `image/${format}`;
-                    const blob = await image.toBlob(mimeType);
-                    convertedFile = new File([blob], newName, { type: mimeType });
+                    // Conversión con canvas.toBlob
+                    convertedFile = await convertImage(file, format);
                 }
-                
+
                 convertedFiles.push(convertedFile);
 
                 // Crea y muestra el enlace de descarga
