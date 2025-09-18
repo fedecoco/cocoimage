@@ -1,4 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- Validación de librerías ---
+    // Solo necesitamos HeifEncoder para HEIF. Para los otros formatos, el navegador tiene canvas.toBlob()
+    if (typeof HeifEncoder === 'undefined') {
+        const errorMessage = 'Error: La librería de HEIF no se cargó correctamente. Revisa tu conexión a internet y la URL del script.';
+        console.error(errorMessage);
+        alert(errorMessage);
+        return;
+    }
+
     // --- Referencias al DOM ---
     const uploadArea = document.getElementById('upload-area');
     const fileInput = document.getElementById('file-input');
@@ -56,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Función genérica para convertir imágenes (excepto HEIF) ---
+    // Usando canvas.toBlob() que es nativo del navegador
     async function convertImage(file, format) {
         const imageBitmap = await createImageBitmap(file);
         const canvas = document.createElement('canvas');
@@ -64,8 +74,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(imageBitmap, 0, 0);
 
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => { // Agregamos reject para manejar errores
             canvas.toBlob((blob) => {
+                if (!blob) {
+                    return reject(new Error('Falló la creación del Blob desde el canvas.'));
+                }
                 const newName = `${file.name.split('.').slice(0, -1).join('.')}.${format}`;
                 const convertedFile = new File([blob], newName, { type: `image/${format}` });
                 resolve(convertedFile);
@@ -106,12 +119,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     ctx.drawImage(imageBitmap, 0, 0);
                     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-                    const encoder = new libheif.HeifEncoder();
+                    // Usamos HeifEncoder directamente, que es lo que expone libheif-bundle.js
+                    const encoder = new HeifEncoder(); 
                     const heifArrayBuffer = await encoder.encode(imageData);
 
                     convertedFile = new File([heifArrayBuffer], newName, { type: 'image/heif' });
                 } else {
-                    // Conversión con canvas.toBlob
+                    // Conversión con canvas.toBlob para otros formatos
                     convertedFile = await convertImage(file, format);
                 }
 
@@ -129,7 +143,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Error converting file:', error);
                 const errorMsg = document.createElement('p');
                 errorMsg.classList.add('error-message');
-                errorMsg.textContent = 'Error al convertir';
+                // Mensaje de error más específico si la conversión falla
+                if (error.message.includes('creation failed') || error.message.includes('toBlob')) {
+                    errorMsg.textContent = 'Error: No se pudo crear la imagen convertida.';
+                } else if (error.message.includes('not supported') || error.message.includes('HeifEncoder')) {
+                    errorMsg.textContent = `Error: El formato ${format.toUpperCase()} no es soportado o la librería no se cargó.`;
+                } else {
+                    errorMsg.textContent = 'Error al convertir';
+                }
                 errorMsg.style.color = 'red';
                 previewItem.appendChild(errorMsg);
             }
