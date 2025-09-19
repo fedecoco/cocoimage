@@ -15,9 +15,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const formatSelect = document.getElementById('format-select');
     const imagePreviews = document.getElementById('image-previews');
     const downloadAllBtn = document.getElementById('download-all-btn');
+    const clearBtn = document.getElementById('clear-btn');
 
     let filesToConvert = [];
     let convertedFiles = [];
+
+    // --- Limpiar archivos ---
+    function clearFiles() {
+        filesToConvert = [];
+        convertedFiles = [];
+        imagePreviews.innerHTML = '';
+        if (downloadAllBtn) downloadAllBtn.style.display = 'none';
+        if (clearBtn) clearBtn.style.display = 'none';
+        convertBtn.disabled = true;
+        fileInput.value = ''; // Resetea el input de archivo
+    }
+
+    if (clearBtn) {
+        clearBtn.addEventListener('click', clearFiles);
+    }
 
     // --- Manejo de subida de archivos ---
     uploadArea.addEventListener('dragover', (e) => {
@@ -44,7 +60,12 @@ document.addEventListener('DOMContentLoaded', () => {
         imagePreviews.innerHTML = '';
         convertedFiles = [];
         if (downloadAllBtn) downloadAllBtn.style.display = 'none';
-        if (filesToConvert.length > 0) convertBtn.disabled = false;
+        if (filesToConvert.length > 0) {
+            convertBtn.disabled = false;
+            if (clearBtn) clearBtn.style.display = 'inline-block';
+        } else {
+            if (clearBtn) clearBtn.style.display = 'none';
+        }
 
         for (const file of filesToConvert) {
             const reader = new FileReader();
